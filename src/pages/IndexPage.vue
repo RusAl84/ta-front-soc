@@ -1,17 +1,313 @@
 <template>
-  <q-page class="flex flex-center">
-    <img
-      alt="Quasar logo"
-      src="~assets/quasar-logo-vertical.svg"
-      style="width: 200px; height: 200px"
-    >
+  <q-page>
+    <q-card class="chatmessages">
+      <div class="flexrow">
+        <div>
+          <q-card-section>
+            <div class="text-h6">Загрузка данных:</div>
+          </q-card-section>
+        </div>
+        <div>
+          <q-card-section>
+            <q-uploader
+              :url="hostae_uploadae"
+              label="Загрузите свои данные .json, chatMessages/*"
+              square
+              flat
+              color="green"
+              bordered
+              single
+              @uploaded="fileUploaded"
+              accept=".json, chatMessages/*"
+              style="min-width: 600px; max-width: 600px"
+            />
+          </q-card-section>
+        </div>
+      </div>
+      <q-card-section>
+        <div class="editorclass">
+          <q-editor
+            v-model="chatmessages"
+            max-height="300px"
+            :dense="$q.screen.lt.md"
+            :toolbar="[
+              [
+                {
+                  label: $q.lang.editor.align,
+                  icon: $q.iconSet.editor.align,
+                  fixedLabel: true,
+                  list: 'only-icons',
+                  options: ['left', 'center', 'right', 'justify'],
+                },
+                {
+                  label: $q.lang.editor.align,
+                  icon: $q.iconSet.editor.align,
+                  fixedLabel: true,
+                  options: ['left', 'center', 'right', 'justify'],
+                },
+              ],
+              [
+                'bold',
+                'italic',
+                'strike',
+                'underline',
+                'subscript',
+                'superscript',
+              ],
+              ['token', 'hr', 'link', 'custom_btn'],
+              ['print', 'fullscreen'],
+              [
+                {
+                  label: $q.lang.editor.formatting,
+                  icon: $q.iconSet.editor.formatting,
+                  list: 'no-icons',
+                  options: ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'code'],
+                },
+                {
+                  label: $q.lang.editor.fontSize,
+                  icon: $q.iconSet.editor.fontSize,
+                  fixedLabel: true,
+                  fixedIcon: true,
+                  list: 'no-icons',
+                  options: [
+                    'size-1',
+                    'size-2',
+                    'size-3',
+                    'size-4',
+                    'size-5',
+                    'size-6',
+                    'size-7',
+                  ],
+                },
+                {
+                  label: $q.lang.editor.defaultFont,
+                  icon: $q.iconSet.editor.font,
+                  fixedIcon: true,
+                  list: 'no-icons',
+                  options: [
+                    'default_font',
+                    'arial',
+                    'arial_black',
+                    'comic_sans',
+                    'courier_new',
+                    'impact',
+                    'lucida_grande',
+                    'times_new_roman',
+                    'verdana',
+                  ],
+                },
+                'removeFormat',
+              ],
+              ['quote', 'unordered', 'ordered', 'outdent', 'indent'],
+
+              ['undo', 'redo'],
+              ['viewsource'],
+            ]"
+            :fonts="{
+              arial: 'Arial',
+              arial_black: 'Arial Black',
+              comic_sans: 'Comic Sans MS',
+              courier_new: 'Courier New',
+              impact: 'Impact',
+              lucida_grande: 'Lucida Grande',
+              times_new_roman: 'Times New Roman',
+              verdana: 'Verdana',
+            }"
+          />
+        </div>
+      </q-card-section>
+    </q-card>
+    <q-card class="chatmessages">
+      <div class="flexrow">
+        <div>
+          <q-card-section>
+            <div class="text-h6">Извлечение ключевых слов:</div>
+          </q-card-section>
+          <q-input
+            class="inputtext"
+            v-model="proc_text"
+            type="textarea"
+            autogrow
+            float-label="Введите текст для анализа"
+          />
+          <q-card-section>
+            <q-btn color="primary" label="Обработать" @click="onProc" />
+          </q-card-section>
+          <q-card-section>
+            <div class="text-h6">Ключевые слова:</div>
+          </q-card-section>
+          <q-input
+            class="inputtext"
+            v-model="resp_text"
+            type="textarea"
+            readonly
+            autogrow
+          />
+          <q-card-section>
+            <q-btn color="primary" label="Добавить в БД>" @click="onProcAdd" />
+          </q-card-section>
+        </div></div
+    ></q-card>
+    <q-card class="chatmessages">
+      <div class="flexrow">
+        <div>
+          <q-card-section>
+            <div class="text-h6">База скомпроментированных сообщений:</div>
+          </q-card-section>
+          <div class="flexrow">
+            <q-card-section>
+              <q-btn color="primary" label="Загрузить БД" @click="onLoadDB" />
+            </q-card-section>
+            <q-card-section>
+              <q-btn color="primary" label="Очистить БД" @click="onClearDB" />
+            </q-card-section>
+          </div>
+          <q-card-section v-if="all_data.length > 1">
+            <div v-for="(line, i) in all_data" :key="i">
+              <div>
+                <b>Сообщение {{ i + 1 }}</b>
+              </div>
+              <div>Исходный текст сообщения: {{ line.text }}</div>
+              <div>Ключевые слова: {{ line.KEYWORDS }}</div>
+              <br />
+            </div>
+          </q-card-section>
+        </div>
+      </div>
+    </q-card>
+    <q-card class="chatmessages">
+      <div class="flexrow">
+        <div>
+          <q-card-section>
+            <div class="text-h6">
+              Найденные целевые сообщения (социального инжиниринга):
+            </div>
+          </q-card-section>
+          <q-card-section class="q-gutter-lg">
+            <q-btn color="primary" label="Поиск" @click="onFindCL" />
+          </q-card-section>
+        </div>
+      </div>
+      <q-card-section v-if="ae_data.length > 0">
+        <div v-for="(line, i) in ae_data" :key="i">
+          <div>
+            <b>Найденный фрагмент &nbsp; {{ i + 1 }}</b>
+          </div>
+          <div><b>Исходный текст сообщения:</b> {{ line.text }}</div>
+          <div><b>Ключевые слова: </b>{{ line.KEYWORDS }}</div>
+          <br />
+        </div> </q-card-section
+    ></q-card>
   </q-page>
 </template>
 
 <script>
-import { defineComponent } from 'vue'
+import { defineComponent, ref } from "vue";
+import axios from "axios";
+import * as cfg from "../config.js";
 
-export default defineComponent({
-  name: 'IndexPage'
-})
+export default {
+  data() {
+    return {
+      file: "",
+      hostae: cfg.hostae,
+      hostae_uploadae: cfg.hostae_uploadae,
+      chatmessages: "",
+      proc_text: ref(""),
+      ttype: ref(""),
+      resp_text: ref(""),
+      resp_data: ref(""),
+      all_data: ref([{}]),
+      ae_data: ref([{}]),
+      filename: ref(""),
+      options: ["RAKE", "YAKE", "BERT"],
+    };
+  },
+  methods: {
+    handleFileUpload() {
+      this.file = this.$refs.file.files[0];
+    },
+    fileUploaded({ files, xhr }) {
+      let data = JSON.parse(xhr.response);
+      this.chatmessages = data["text"];
+      this.filename = data["filename"];
+    },
+    async onProc() {
+      const response = await axios({
+        method: "post",
+        url: cfg.hostae + "get_pattern",
+        data: {
+          text: this.proc_text,
+        },
+      });
+      console.log(response);
+      this.resp_data = response.data;
+      this.resp_text = response.data.print_text;
+    },
+    async onProcAdd() {
+      const response = await axios({
+        method: "post",
+        url: cfg.hostae + "get_pattern_add",
+        data: this.resp_data,
+      });
+      this.all_data = response.data;
+      console.log("this.resp_data");
+      console.log(this.all_data);
+    },
+    async onLoadDB() {
+      const response = await axios({
+        method: "get",
+        url: cfg.hostae + "load_db",
+        data: this.resp_data,
+      });
+      this.all_data = response.data;
+
+      console.log(this.all_data);
+    },
+    async onClearDB() {
+      const response = await axios({
+        method: "get",
+        url: cfg.hostae + "clear_db",
+      });
+      console.log(response);
+    },
+    async onFindCL() {
+      const response = await axios({
+        method: "post",
+        url: cfg.hostae + "findae",
+        data: {
+          filename: this.filename,
+          type: this.ttype,
+        },
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      // console.log(response);
+      this.ae_data = response.data;
+      console.log("ae_data");
+      console.log(this.ae_data);
+    },
+  },
+};
 </script>
+
+<style lang="sass">
+.page
+  padding-bottom: 10px
+  padding-top: 10px
+  padding-left: 10px
+  padding-r: 10px
+
+.chatmessages
+  padding: 10px
+  margin: 10px
+.flexrowЁ
+  display: flex
+  flex-flow: row wrap
+  justify-content: flex-start
+.editorclass
+  max-height: 500px
+.inputtext
+  width: 800px
+</style>
