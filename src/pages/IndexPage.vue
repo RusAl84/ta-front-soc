@@ -11,7 +11,7 @@
           <q-card-section>
             <q-uploader
               :url="hostae_uploadae"
-              label="Загрузите свои данные .json, chatMessages/*"
+              label="Загрузите данные .json/*"
               square
               flat
               color="green"
@@ -19,7 +19,7 @@
               single
               @uploaded="fileUploaded"
               accept=".json, chatMessages/*"
-              style="min-width: 600px; max-width: 600px"
+              style="min-width: 700px; max-width: 800px"
             />
           </q-card-section>
         </div>
@@ -144,7 +144,7 @@
             autogrow
           />
           <q-card-section>
-            <q-btn color="primary" label="Добавить в БД>" @click="onProcAdd" />
+            <q-btn color="primary" label="Добавить в БД" @click="onProcAdd" />
           </q-card-section>
         </div></div
     ></q-card>
@@ -152,7 +152,9 @@
       <div class="flexrow">
         <div>
           <q-card-section>
-            <div class="text-h6">База скомпроментированных сообщений:</div>
+            <div class="text-h6">
+              База данных сообщений социального инжиниринга:
+            </div>
           </q-card-section>
           <div class="flexrow">
             <q-card-section>
@@ -180,7 +182,7 @@
         <div>
           <q-card-section>
             <div class="text-h6">
-              Найденные целевые сообщения (социального инжиниринга):
+              Найденные целевые сообщения социального инжиниринга:
             </div>
           </q-card-section>
           <q-card-section class="q-gutter-lg">

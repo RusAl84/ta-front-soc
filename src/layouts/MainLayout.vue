@@ -10,7 +10,6 @@
           aria-label="Меню"
           @click="toggleLeftDrawer"
         />
-
         <q-toolbar-title>
           Информационно-аналитическая система противодействия социальному
           инжинирингу на основе методов интеллектуального анализа текстов
@@ -43,31 +42,22 @@ import EssentialLink from "components/EssentialLink.vue";
 const linksList = [
   {
     title: "Загрузка данных",
-    icon: "school",
-    link: "load",
-  },
-  {
-    title: "Github",
-    caption: "github.com/quasarframework",
     icon: "code",
-    link: "https://github.com/quasarframework",
+    link: "/load",
   },
   {
-    title: "Discord Chat Channel",
-    caption: "chat.quasar.dev",
-    icon: "chat",
-    link: "https://chat.quasar.dev",
+    title: "БД социнжиниринга",
+    icon: "school",
+    link: "/key",
   },
   {
-    title: "Forum",
-    caption: "forum.quasar.dev",
+    title: "Поиск социнжиниринга",
     icon: "record_voice_over",
-    link: "https://forum.quasar.dev",
+    link: "/find",
   },
-
   {
     title: "О проекте",
-    icon: "favorite",
+    icon: "rss_feed",
     link: "/about",
   },
 ];
